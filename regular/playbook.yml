@@ -335,7 +335,7 @@
     # Create a system demon for Infisical
     - name: Create Infisical systemd service file
       template:
-        src: infisical.service.j2
+        src: templates/infisical.service.j2
         dest: /etc/systemd/system/infisical.service
       notify: Reload systemd
 
@@ -360,7 +360,7 @@
 
     - name: Configure HAProxy
       template:
-        src: haproxy.cfg.j2
+        src: templates/haproxy.cfg.j2
         dest: /etc/haproxy/haproxy.cfg
       notify: Reload HAProxy
 
