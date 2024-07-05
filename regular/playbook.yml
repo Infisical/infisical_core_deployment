@@ -352,36 +352,27 @@
         name: infisical
         state: restarted
 
-    # Download Nginx to serve Infisical to the web
-    - name: Install Nginx
+    - name: Install HAProxy
       apt:
-        name: nginx
+        name: haproxy
         state: present
         update_cache: yes
 
-    # Configure Nginx
-    - name: Configure Nginx to proxy requests to Infisical
+    - name: Configure HAProxy
       template:
-        src: nginx_infisical.conf.j2
-        dest: /etc/nginx/sites-available/infisical
-      notify: Reload Nginx
+        src: haproxy.cfg.j2
+        dest: /etc/haproxy/haproxy.cfg
+      notify: Reload HAProxy
 
-    # Enable Infisical nginx service
-    - name: Enable Nginx site
-      file:
-        src: /etc/nginx/sites-available/infisical
-        dest: /etc/nginx/sites-enabled/infisical
-        state: link
-      notify: Reload Nginx
+    - name: Format HAProxy configuration
+      shell: echo "" >> /etc/haproxy/haproxy.cfg
 
-    # Remove nginx default
-    - name: Remove default Nginx site
-      file:
-        path: /etc/nginx/sites-enabled/default
-        state: absent
-      notify: Reload Nginx
+    - name: Ensure HAProxy service is enabled and started
+      systemd:
+        name: haproxy
+        enabled: yes
+        state: started
 
-    # Allow HTTP
     - name: Open HTTP port in firewall
       ufw:
         rule: allow
@@ -393,7 +384,7 @@
       systemd:
         daemon_reload: yes
 
-    - name: Reload Nginx
+    - name: Reload HAProxy
       systemd:
-        name: nginx
+        name: haproxy
         state: reloaded
