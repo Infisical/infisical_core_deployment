@@ -1,0 +1,19 @@
+---
+- include_tasks: postgres.yml
+  when: install_postgres | default(false)
+  vars:
+    postgres_version: "16"
+
+    # Postgres details
+    postgres_user: "{{ db_user_username }}"
+    postgres_password: "{{ db_user_password }}"
+    postgres_db: "{{ db_name }}"
+
+    # Additional options
+    postgres_allowed_ip_addresses: "{{ allowed_ip_addresses | default([]) }}"
+
+- include_tasks: redis.yml
+  when: install_redis | default(false)
+
+- include_tasks: infisical.yml
+  when: install_infisical | default(false)
