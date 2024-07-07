@@ -1,0 +1,30 @@
+galaxy_info:
+  author: Infisical Inc
+  description: Deploy and setup Infisical with PostgreSQL and Redis. This version is without high availability.
+  company: Infisical
+
+  license: MIT
+
+  min_ansible_version: "2.16.4"
+
+  platforms:
+    - name: GenericUNIX
+      versions:
+        - all
+    - name: GenericLinux
+      versions:
+        - all
+    - name: GenericBSD
+      versions:
+        - all
+    - name: Windows
+      versions:
+        - all
+
+  galaxy_tags:
+    - infisical
+    - postgresql
+    - redis
+    - deployment
+
+dependencies: []
