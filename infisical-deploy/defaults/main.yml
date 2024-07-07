@@ -1,0 +1,25 @@
+---
+# SSH configuration
+ssh_user: ssh_username
+ssh_password: ssh_password
+ssh_sudo_password: sudo_password
+
+# PostgreSQL configuration
+postgres_version: "16"
+
+postgres_user: infisical-user
+postgres_db: infisical-db
+postgres_allowed_ip_addresses: ["3.3.3.3"]
+postgres_clean_allowed_ip_addresses: true
+
+# Redis configuration
+redis_username: infisical-redis
+
+# Infisical configuration
+# These will be generated if not provided
+encryption_key: ""
+auth_secret: ""
+# HAProxy configuration
+# Add any HAProxy-specific variables here if needed
+
+env_vars:
