@@ -1,0 +1,61 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+  become: true
+
+- name: Install PostgreSQL and dependencies
+  apt:
+    name:
+      - postgresql-{{ postgres_version }}
+      - postgresql-contrib
+      - python3-psycopg2
+    state: present
+  become: true
+
+- name: Ensure PostgreSQL is started and enabled
+  systemd:
+    name: postgresql
+    state: started
+    enabled: yes
+  become: true
+
+- name: Create PostgreSQL user
+  postgresql_user:
+    name: "{{ postgres_user }}"
+    password: "{{ postgres_password }}"
+    role_attr_flags: CREATEDB,SUPERUSER
+  become: true
+  become_user: postgres
+
+- name: Create PostgreSQL database
+  postgresql_db:
+    name: "{{ postgres_db }}"
+    owner: "{{ postgres_user }}"
+  become: true
+  become_user: postgres
+
+- name: Configure PostgreSQL to allow remote connections
+  lineinfile:
+    path: /etc/postgresql/{{ postgres_version }}/main/postgresql.conf
+    regexp: '^#?listen_addresses\s*='
+    line: "listen_addresses = '*'"
+  become: true
+  notify: Restart PostgreSQL
+
+- name: Allow remote connections to PostgreSQL
+  template:
+    src: templates/configs/pg_hba.conf.j2
+    dest: /etc/postgresql/{{ postgres_version }}/main/pg_hba.conf
+  become: true
+  notify: Restart PostgreSQL
+
+- name: Set PostgreSQL connection URI fact
+  set_fact:
+    postgres_connection_url: "postgresql://{{ db_user_username }}:{{ db_user_password | urlencode }}@{{ ansible_host }}:5432/{{ db_name }}"
+
+- name: Add PostgreSQL URI to host facts
+  add_host:
+    name: "{{ inventory_hostname }}"
+    groups: postgres_servers
+    postgres_connection_url: "{{ postgres_connection_url }}"
