@@ -1,0 +1,82 @@
+---
+- name: Ensure all necessary packages are installed on Redis server
+  apt:
+    name:
+      - software-properties-common
+      - redis-server
+    state: present
+    update_cache: yes
+
+- name: Ensure Redis service is enabled and started
+  systemd:
+    name: redis-server
+    enabled: yes
+    state: started
+
+- name: Configure Redis for secure remote access
+  lineinfile:
+    path: /etc/redis/redis.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  loop:
+    - { regexp: "^#?bind ", line: "bind 0.0.0.0" }
+    - { regexp: "^#?protected-mode ", line: "protected-mode yes" }
+    - { regexp: "^#?maxmemory ", line: "maxmemory 256mb" }
+    - { regexp: "^#?maxmemory-policy ", line: "maxmemory-policy allkeys-lru" }
+
+- name: Remove all user-related configurations from redis.conf
+  lineinfile:
+    path: /etc/redis/redis.conf
+    regexp: "{{ item }}"
+    state: absent
+  loop:
+    - "^user "
+    - "^requirepass "
+    - "^masterauth "
+    - "^aclfile "
+
+- name: Add ACL file configuration to redis.conf
+  lineinfile:
+    path: /etc/redis/redis.conf
+    line: "aclfile /etc/redis/users.acl"
+    state: present
+
+- name: Create ACL file for Redis users
+  copy:
+    dest: /etc/redis/users.acl
+    content: |
+      user default off
+      user {{ redis_username }} on >{{ redis_password }} ~* &* +@all
+
+- name: Ensure correct permissions on ACL file
+  file:
+    path: /etc/redis/users.acl
+    owner: redis
+    group: redis
+    mode: "0640"
+
+- name: Restart Redis to apply changes
+  systemd:
+    name: redis-server
+    state: restarted
+
+- name: Open Redis port in firewall
+  ufw:
+    rule: allow
+    port: 6379
+    proto: tcp
+
+- name: Debug - Print Redis connection URI
+  debug:
+    msg: "Redis connection URI: redis://{{ redis_username }}:{{ redis_password }}@{{ ansible_host }}:6379"
+
+- name: Set Redis connection URI fact
+  set_fact:
+    redis_connection_url: "redis://{{ redis_username }}:{{ redis_password | urlencode }}@{{ ansible_host }}:6379"
+
+- name: Add Redis URI to host facts
+  add_host:
+    name: "{{ inventory_hostname }}"
+    groups: redis_server
+    redis_connection_url: "{{ redis_connection_url }}"
