@@ -77,8 +77,8 @@ Here's an example playbook that demonstrates how to use this role:
       vars:
         install_postgres: true
         allowed_ip_addresses:
-          - "80.208.66.9"
-          - "172.104.244.217"
+          - "YOUR_LOCAL_IP"
+          - "YOUR_INFISICAL_INSTANCE_IP"
         db_user_username: your_db_user
         db_user_password: your_db_password
         db_name: your_db_name
@@ -115,13 +115,13 @@ Here's an example inventory file (`inventory.ini`) to use with this role:
 
 ```ini
 [postgres_server]
-172.104.149.35
+YOUR_POSTGRES_SERVER_IP
 
 [redis_server]
-172.104.149.116
+YOUR_REDIS_IP
 
 [infisical_instance]
-172.104.244.217
+YOUR_INFISICAL_INSTANCE_IP # This is where Infisical will run on!
 ```
 
 ## Notes
@@ -136,11 +136,3 @@ Here's an example inventory file (`inventory.ini`) to use with this role:
 - Ensure that you're using strong, unique passwords for all components (PostgreSQL, Redis, SSH).
 - Review and adjust the `allowed_ip_addresses` for PostgreSQL to limit access as needed.
 - Consider using Ansible Vault to encrypt sensitive variables in your playbook.
-
-## License
-
-[Specify your license here]
-
-## Author Information
-
-[Your name or organization]
