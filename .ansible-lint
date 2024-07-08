@@ -1,0 +1,6 @@
+warn_list: # or 'skip_list' to silence them completely
+  - command-instead-of-module # Using command rather than module
+  - experimental # all rules tagged as experimental
+  - no-changed-when # Commands should not change things if nothing needs doing
+  - risky-file-permissions # File permissions unset or incorrect
+  - risky-shell-pipe # Shells that use pipes should set the pipefail option
