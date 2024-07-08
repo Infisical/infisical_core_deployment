@@ -67,10 +67,6 @@
     port: 6379
     proto: tcp
 
-- name: Debug - Print Redis connection URI
-  debug:
-    msg: "Redis connection URI: redis://{{ redis_username }}:{{ redis_password }}@{{ ansible_host }}:6379"
-
 - name: Set Redis connection URI fact
   set_fact:
     redis_connection_url: "redis://{{ redis_username }}:{{ redis_password | urlencode }}@{{ ansible_host }}:6379"
