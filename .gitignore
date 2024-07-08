@@ -2,3 +2,4 @@
 inventory.ini
 .DS_Store
 playbook.yml
+ansible.cfg
