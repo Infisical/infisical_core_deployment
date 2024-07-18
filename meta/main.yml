@@ -2,6 +2,7 @@ galaxy_info:
   author: Infisical Inc
   description: Deploy and setup Infisical with PostgreSQL and Redis. This version is without high availability.
   company: Infisical
+  role_name: infisical_core_deployment
 
   license: MIT
 
